@@ -258,19 +258,66 @@ io.on("connection", socket => {
   });
 
   socket.on("joinRoom", ({name, roomCode}) => {
-    const rc=(roomCode||"").trim().toUpperCase();
-    const room=rooms.get(rc);
-    if(!room) return socket.emit("errorMsg","Table introuvable.");
-    if(room.players.length>=9) return socket.emit("errorMsg","La table est complète.");
-    if(room.phase!=="waiting") return socket.emit("errorMsg","Une main est déjà en cours.");
-    name=(name||"Joueur").trim().slice(0,18);
-    const seat=[0,1,2,3,4,5,6,7,8].find(x=>!room.players.some(p=>p.seat===x));
-    const p={id:socket.id,name,chips:0,folded:false,bet:0,totalBet:0,isAdmin:false,connected:true,socketId:socket.id,seat,cards:[],allIn:false,acted:false};
-    room.players.push(p);
-    socket.join(rc); socket.data.roomCode=rc; socket.data.playerId=p.id;
-    room.message=`${name} a rejoint la table.`;
+  const rc=(roomCode||"").trim().toUpperCase();
+  const room=rooms.get(rc);
+  if(!room) return socket.emit("errorMsg","Table introuvable.");
+
+  name=(name||"Joueur").trim().slice(0,18);
+
+  const existing = room.players.find(
+    p => p.name.toLowerCase() === name.toLowerCase() && !p.connected
+  );
+
+  if (existing) {
+    existing.connected = true;
+    existing.socketId = socket.id;
+    socket.join(rc);
+    socket.data.roomCode = rc;
+    socket.data.playerId = existing.id;
+    room.message = `${existing.name} s'est reconnecté.`;
     emitState(room);
-  });
+    return;
+  }
+
+  const sameNameOnline = room.players.find(
+    p => p.name.toLowerCase() === name.toLowerCase() && p.connected
+  );
+
+  if (sameNameOnline) {
+    return socket.emit("errorMsg","Ce pseudo est déjà connecté à cette table.");
+  }
+
+  if(room.players.length>=9) return socket.emit("errorMsg","La table est complète.");
+  if(room.phase!=="waiting") return socket.emit("errorMsg","Une main est déjà en cours.");
+
+  const seat=[0,1,2,3,4,5,6,7,8].find(x=>!room.players.some(p=>p.seat===x));
+
+  const p={
+    id:socket.id,
+    name,
+    chips:0,
+    folded:false,
+    bet:0,
+    totalBet:0,
+    isAdmin:false,
+    connected:true,
+    socketId:socket.id,
+    seat,
+    cards:[],
+    allIn:false,
+    acted:false
+  };
+
+  room.players.push(p);
+
+  socket.join(rc);
+  socket.data.roomCode=rc;
+  socket.data.playerId=p.id;
+
+  room.message=`${name} a rejoint la table.`;
+  emitState(room);
+});
+    
 
   socket.on("adminChips", ({playerId, amount}) => {
     const room=getRoomBySocket(socket), me=room && findPlayer(room,socket);
