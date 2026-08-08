@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Poker Privé</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div id="toast"></div>
+
+<section id="home" class="screen">
+  <div class="hero">
+    <div class="logo">♠ <span>POKER PRIVÉ</span> ♥</div>
+    <h1>Ta table. Tes amis.<br>Des jetons virtuels.</h1>
+    <p>Crée une table privée de Texas Hold’em ou rejoins tes amis avec un code.</p>
+    <div class="card login">
+      <input id="name" maxlength="18" placeholder="Ton prénom ou pseudo">
+      <div class="row">
+        <button id="createBtn" class="primary">Créer une table</button>
+        <button id="joinOpenBtn">Rejoindre</button>
+      </div>
+      <div id="joinBox" class="hidden">
+        <input id="roomCode" maxlength="6" placeholder="CODE TABLE">
+        <button id="joinBtn" class="primary">Entrer à la table</button>
+      </div>
+    </div>
+    <small>Jeu privé avec jetons virtuels uniquement — aucun dépôt ou retrait d’argent.</small>
+  </div>
+</section>
+
+<section id="game" class="screen hidden">
+  <header>
+    <div class="brand">♠ POKER PRIVÉ</div>
+    <div class="room">TABLE <b id="code"></b> <button id="copyCode">Copier</button></div>
+  </header>
+
+  <main>
+    <div class="tableWrap">
+      <div class="pokerTable">
+        <div id="seats"></div>
+        <div class="center">
+          <div id="phase" class="phase"></div>
+          <div id="community" class="cards"></div>
+          <div class="pot">POT <b id="pot">0</b></div>
+          <div id="status" class="status"></div>
+        </div>
+      </div>
+
+      <div id="myCards" class="myCards"></div>
+
+      <div id="actions" class="actions hidden">
+        <button data-act="fold" class="danger">Se coucher</button>
+        <button data-act="check">Check</button>
+        <button data-act="call" class="primary">Suivre</button>
+        <div class="raiseBox">
+          <input id="raiseAmount" type="number" min="1">
+          <button data-act="raise" class="gold">Relancer</button>
+        </div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="panel">
+        <h3>Joueurs</h3>
+        <div id="playersList"></div>
+      </div>
+
+      <div id="adminPanel" class="panel hidden">
+        <h3>Administration</h3>
+        <div class="adminRow">
+          <label>Petite blind <input id="sb" type="number" value="10"></label>
+          <label>Grosse blind <input id="bb" type="number" value="20"></label>
+        </div>
+        <button id="saveBlinds">Enregistrer les blinds</button>
+        <button id="startHand" class="primary wide">Distribuer une nouvelle main</button>
+        <p class="hint">Utilise +500 / -500 à côté d’un joueur pour gérer ses jetons.</p>
+      </div>
+
+      <div class="panel chatPanel">
+        <h3>Chat</h3>
+        <div id="chatLog"></div>
+        <div class="chatInput"><input id="chatText" maxlength="200" placeholder="Message…"><button id="sendChat">Envoyer</button></div>
+      </div>
+    </aside>
+  </main>
+</section>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
