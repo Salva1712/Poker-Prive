@@ -1,0 +1,14 @@
+{
+  "name": "poker-prive",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Table priv\u00e9e de Texas Hold'em entre amis avec jetons virtuels",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  }
+}
